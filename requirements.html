@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Requirements | RPG Character Progression Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site">
+    <div class="inner">
+      <div class="course">CS 5744 · Project 1 · Group 07</div>
+      <h1>RPG Character Progression Tracker</h1>
+      <p class="tagline">Requirements, high-level design, and design rationale</p>
+      <nav class="site">
+      <a href="index.html">Overview</a>
+      <a href="requirements.html" class="active">Requirements</a>
+      <a href="design.html">High-Level Design</a>
+      <a href="traceability.html">Traceability</a>
+      <a href="rationale.html">Design Rationale</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div class="toc"><strong>On this page</strong><ol>
+      <li><a href="#customer">Customer and Intended Users</a></li>
+      <li><a href="#fr">Functional Requirements</a></li>
+      <li><a href="#nfr">Non-Functional Requirements</a></li>
+      <li><a href="#example">Example Target User</a></li>
+    </ol></div>
+
+    <h2 id="customer">Customer and Intended Users</h2>
+    <div class="todo">Customer statement: who is paying for or commissioning the system. The assignment requires both the customer and the users, and the Requirements PDF only names the users (Andre and Sophia).</div>
+    <p><strong>Intended users:</strong> people who play role-playing video games (RPGs) from a preset list of supported games, and who want an easy way to track the progression requirements and rewards for their account, their characters, and their parties of grouped characters.</p>
+
+    <h2 id="fr">Functional Requirements</h2>
+    <p>Each requirement has a unique identifier that is referenced on the <a href="design.html">design</a>, <a href="traceability.html">traceability</a>, and <a href="rationale.html">rationale</a> pages. Sub-requirements are numbered under their parent, for example <span class="id">FR-4.1</span>.</p>
+    <div class="table-wrap"><table>
+      <tr><th>ID</th><th>Requirement</th></tr>
+      <tr><td class="id">FR-1</td><td>The system must allow a user to create an account and to sign in and out.</td></tr>
+      <tr><td class="id">FR-2</td><td>The system must allow a user to add one or more supported games to their account and to create, edit, and delete multiple characters for each game.</td></tr>
+      <tr><td class="id">FR-3</td><td>The system must allow a user to manually enter and update a character's current level and EXP (and account-level progression, where the game defines it).</td></tr>
+      <tr><td class="id">FR-4</td><td>The system must present a single consolidated view per character that includes the items in FR-4.1 through FR-4.6.</td></tr>
+      <tr><td class="id">FR-4.1</td><td>EXP required for the next level and the user's progress toward it.</td></tr>
+      <tr><td class="id">FR-4.2</td><td>Level-up materials required for the next level.</td></tr>
+      <tr><td class="id">FR-4.3</td><td>Rewards granted at each level (e.g., in-game currency, stat increases, items).</td></tr>
+      <tr><td class="id">FR-4.4</td><td>A before-and-after comparison of stats for a level-up, showing the difference for each stat.</td></tr>
+      <tr><td class="id">FR-4.5</td><td>Equipment and items unlocked at each level.</td></tr>
+      <tr><td class="id">FR-4.6</td><td>Locations unlocked at each level.</td></tr>
+      <tr><td class="id">FR-5</td><td>The system must allow a user to group characters into one or more parties for games that support parties.</td></tr>
+      <tr><td class="id">FR-6</td><td>The system must display a party summary showing each member's level and next-level requirements.</td></tr>
+      <tr><td class="id">FR-7</td><td>The system must allow a user to select a target level and display the cumulative EXP, materials, and rewards from the current level to that target.</td></tr>
+      <tr><td class="id">FR-8</td><td>The system must store games as data that defines their progression mechanics (level caps, EXP curves, stats, rewards, unlock requirements), and must support multiple progression models, including level-based, account-wide, and character-specific.</td></tr>
+      <tr><td class="id">FR-9</td><td>The system must store all accounts, characters, parties, and progression records across sessions and devices, and must allow a user to permanently delete their account and all associated data.</td></tr>
+    </table></div>
+
+    <h2 id="nfr">Non-Functional Requirements</h2>
+    <div class="table-wrap"><table>
+      <tr><th>ID</th><th>Category</th><th>Requirement</th></tr>
+      <tr><td class="id">NF-1</td><td>Availability</td><td>The system shall maintain at least 99% monthly availability, excluding scheduled maintenance.</td></tr>
+      <tr><td class="id">NF-2</td><td>Performance</td><td>The system shall support at least 200 concurrent active users while maintaining standard performance.</td></tr>
+      <tr><td class="id">NF-3</td><td>Scalability</td><td>The system shall support at least 5,000 registered users to account for growth across several RPG communities.</td></tr>
+      <tr><td class="id">NF-4</td><td>Accessibility</td><td>The system shall meet the accessibility requirements in NF-4.1 through NF-4.4.</td></tr>
+      <tr><td class="id">NF-4.1</td><td>Accessibility</td><td>All pages shall be usable with current versions of screen readers, with text alternatives for all non-text content such as charts, icons, and item images.</td></tr>
+      <tr><td class="id">NF-4.2</td><td>Accessibility</td><td>Users across browsers shall be able to view and interact with the system.</td></tr>
+      <tr><td class="id">NF-4.3</td><td>Accessibility</td><td>Users across devices shall be able to view and interact with the system.</td></tr>
+      <tr><td class="id">NF-4.4</td><td>Accessibility</td><td>Text and interface elements shall meet minimum color-contrast ratios.</td></tr>
+      <tr><td class="id">NF-5</td><td>Security</td><td>The system shall meet the security requirements in NF-5.1 and NF-5.2.</td></tr>
+      <tr><td class="id">NF-5.1</td><td>Security</td><td>Sensitive user data shall be encrypted to protect account and progression information if the system is compromised.</td></tr>
+      <tr><td class="id">NF-5.2</td><td>Security</td><td>The system shall validate user profiles to prevent unauthorized users from viewing or modifying private character and progression data.</td></tr>
+      <tr><td class="id">NF-6</td><td>Capacity</td><td>The system shall support data storage and maintenance of at least 200 games to account for new RPG releases.</td></tr>
+      <tr><td class="id">NF-7</td><td>Extensibility</td><td>The system shall support the addition of new game information without requiring major changes to existing game data or application logic.</td></tr>
+      <tr><td class="id">NF-8</td><td>Data accuracy</td><td>The system shall regularly perform reference checks to ensure displayed progression information remains accurate.</td></tr>
+      <tr><td class="id">NF-9</td><td>Data integrity</td><td>The system shall maintain data integrity by preventing race conditions in database transactions.</td></tr>
+      <tr><td class="id">NF-10</td><td>Recoverability</td><td>The system shall maintain backups of game and user information to restore the system after data loss or corruption.</td></tr>
+    </table></div>
+
+    <h2 id="example">Example Target User</h2>
+    <div class="card">
+      <h3>Erik, a casual RPG player getting serious</h3>
+      <p>Erik is a 22-year-old graduate student in computer science who plays video games in his downtime. He has recently gotten into RPGs and wants to progress further so he can see more of their stories, but he is often unsure how to level up fastest and which levels unlock the areas he wants to explore.</p>
+      <p>Erik wants to:</p>
+      <ul>
+        <li>Choose a game and enter his character information to see what he would gain by leveling up (<span class="id">FR-2</span>, <span class="id">FR-3</span>, <span class="id">FR-4</span>).</li>
+        <li>Enter multiple characters and group them, since his favorite RPG has a party system (<span class="id">FR-5</span>, <span class="id">FR-6</span>).</li>
+        <li>See which materials a level-up needs, because some materials are much harder for him to get than others (<span class="id">FR-4.2</span>, <span class="id">FR-7</span>).</li>
+        <li>Update a character's level after leveling up and immediately see the new requirements and rewards (<span class="id">FR-3</span>, <span class="id">FR-4</span>).</li>
+        <li>Rely on the system to already know each game's requirements and rewards, without entering them himself (<span class="id">FR-8</span>).</li>
+        <li>Delete his account if he stops playing, for example to start a PhD (<span class="id">FR-9</span>).</li>
+      </ul>
+    </div>
+
+  </main>
+  <footer><div class="inner">CS 5744 Project 1 · Group 07 · Andre, Brad, Jack, Matt, Mustafa, Sophia</div></footer>
+</body>
+</html>

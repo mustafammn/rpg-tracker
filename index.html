@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Overview | RPG Character Progression Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site">
+    <div class="inner">
+      <div class="course">CS 5744 · Project 1 · Group 07</div>
+      <h1>RPG Character Progression Tracker</h1>
+      <p class="tagline">Requirements, high-level design, and design rationale</p>
+      <nav class="site">
+      <a href="index.html" class="active">Overview</a>
+      <a href="requirements.html">Requirements</a>
+      <a href="design.html">High-Level Design</a>
+      <a href="traceability.html">Traceability</a>
+      <a href="rationale.html">Design Rationale</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <h2>Project Overview</h2>
+    <p>Role-playing games (RPGs) reward players for leveling up their characters, but the information a player needs to plan that progress is scattered: how much EXP the next level takes, which materials it consumes, what stats, items, and locations it unlocks, and how all of this adds up across a whole party. Players often end up checking wikis, spreadsheets, and in-game menus just to decide what to work on next.</p>
+    <p>The <strong>RPG Character Progression Tracker</strong> gives players one place to track this. A user adds the supported games they play, enters their characters' current levels and EXP, and sees a consolidated view of what each character needs for the next level and what it will gain. Users can group characters into parties, plan toward a target level, and keep their data across sessions and devices. Each game's progression rules are stored as data, so new games can be added without changing the application.</p>
+
+    <h3>Customer and Users</h3>
+    <div class="todo">Customer statement (not yet in the Requirements PDF).</div>
+    <p><strong>Intended users:</strong> players of supported RPGs who want an easy way to track progression requirements and rewards for their account, characters, and parties. See the <a href="requirements.html#example">example target user</a>.</p>
+
+    <h2>How This Site Is Organized</h2>
+    <div class="grid">
+      <div class="card">
+        <h4><a href="requirements.html">Requirements</a></h4>
+        <p>Customer, users, and numbered functional (<span class="id">FR-x</span>) and non-functional (<span class="id">NF-x</span>) requirements.</p>
+      </div>
+      <div class="card">
+        <h4><a href="design.html">High-Level Design</a></h4>
+        <p>Top-level architecture, numbered components (<span class="id">C1</span>–<span class="id">C8</span>), and UML component, class, and sequence diagrams.</p>
+      </div>
+      <div class="card">
+        <h4><a href="traceability.html">Traceability</a></h4>
+        <p>A matrix mapping every requirement to the design components that satisfy it.</p>
+      </div>
+      <div class="card">
+        <h4><a href="rationale.html">Design Rationale</a></h4>
+        <p>Key design decisions (<span class="id">DD-x</span>), the requirements driving each, the alternatives considered, and how the design can evolve.</p>
+      </div>
+    </div>
+
+    <h2>Naming Conventions</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Prefix</th><th>Meaning</th><th>Example</th></tr>
+      <tr><td class="id">FR-n</td><td>Functional requirement (sub-items FR-n.m)</td><td>FR-4.2</td></tr>
+      <tr><td class="id">NF-n</td><td>Non-functional requirement</td><td>NF-1</td></tr>
+      <tr><td class="id">Cn</td><td>Design component</td><td>C3 Stat Calculator</td></tr>
+      <tr><td class="id">DD-n</td><td>Design decision</td><td>DD-1</td></tr>
+    </table></div>
+
+    <h2>Team</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Member</th><th>Contribution</th></tr>
+      <tr><td>Andre Perez</td><td>Requirements summary</td></tr>
+      <tr><td>Sophia Schwartz</td><td>Requirements summary</td></tr>
+      <tr><td>Brad Tran</td><td>Design: Stat Calculator, Progression Engine, and Rewards &amp; Unlocks components</td></tr>
+      <tr><td>Matt Danner</td><td>Design: Game Data Adapter, Database, UI; UML component, class, and sequence diagrams</td></tr>
+      <tr><td>Jack Zhao</td><td>Traceability matrix and design rationale</td></tr>
+      <tr><td>Mustafa Nooristani</td><td>Website: building, publishing, and submission</td></tr>
+    </table></div>
+
+  </main>
+  <footer><div class="inner">CS 5744 Project 1 · Group 07 · Andre, Brad, Jack, Matt, Mustafa, Sophia</div></footer>
+</body>
+</html>
