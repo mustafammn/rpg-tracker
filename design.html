@@ -32,19 +32,21 @@
     </ol></div>
 
     <h2 id="overview">Architecture Overview</h2>
-    <div class="todo">The architectural style and a short narrative of how the components work together (Matt).</div>
+    <p>The system is a layered client–server web application (see <a href="rationale.html#dd-1">DD-1</a>). The browser UI (C1) talks only to the API Gateway (C2). Behind the gateway, application services handle accounts (C3), characters and parties (C4), progression and rewards (C5), and stats (C6). Both calculation components read game rules through the Game Data Adapter (C7), so no component contains game-specific code. All data lives in one database (C8), and a background service (C9) checks data integrity and manages backups.</p>
+    <div class="todo">Matt's architecture narrative and diagrams.</div>
 
     <h2 id="components">Component Summary</h2>
     <div class="table-wrap"><table>
       <tr><th>ID</th><th>Component</th><th>Responsibility</th></tr>
-      <tr><td class="id">C1</td><td>User Interface</td><td>Screens for accounts, games, characters, parties, and the consolidated progression view.</td></tr>
-      <tr><td class="id">C2</td><td>Game Data Adapter</td><td>Loads and validates each game's definition data (level caps, EXP curves, stats, rewards, unlocks) and exposes it to the rest of the system in one common format.</td></tr>
-      <tr><td class="id">C3</td><td>Stat Calculator</td><td>Computes character stats from base values, item stats, and multipliers.</td></tr>
-      <tr><td class="id">C4</td><td>Progression Engine</td><td>Tracks EXP and levels, computes next-level and target-level requirements, including materials.</td></tr>
-      <tr><td class="id">C5</td><td>Rewards &amp; Unlocks</td><td>Determines rewards, items, equipment, and locations unlocked at each level.</td></tr>
-      <tr><td class="id">C6</td><td>Database</td><td>Stores accounts, characters, parties, progression records, and game definitions.</td></tr>
-      <tr><td class="id">C7</td><td>Account &amp; Security</td><td>Sign-up, sign-in/out, authorization, encryption of sensitive data, and account deletion.</td></tr>
-      <tr><td class="id">C8</td><td>Party Manager</td><td>Groups characters into parties and builds party summaries.</td></tr>
+      <tr><td class="id">C1</td><td>Web UI (Presentation Layer)</td><td>Semantic, responsive browser interface for accounts, games, characters, parties, and the consolidated progression view.</td></tr>
+      <tr><td class="id">C2</td><td>API Gateway &amp; Authentication</td><td>Single entry point: terminates TLS, validates sessions, and exposes one aggregated endpoint per view.</td></tr>
+      <tr><td class="id">C3</td><td>Account Manager</td><td>Sign-up, sign-in/out, account ownership checks, and permanent account deletion.</td></tr>
+      <tr><td class="id">C4</td><td>Character &amp; Party Manager</td><td>Creates, edits, and deletes characters and parties; validates manual level/EXP entry.</td></tr>
+      <tr><td class="id">C5</td><td>Progression &amp; Rewards Engine</td><td>Stateless: computes EXP, materials, rewards, and equipment/location unlocks for next-level and target-level views.</td></tr>
+      <tr><td class="id">C6</td><td>Stat Calculator</td><td>Stateless: computes before-and-after stats and per-stat differences from base values, item stats, and multipliers.</td></tr>
+      <tr><td class="id">C7</td><td>Game Data Adapter</td><td>Reads each game definition and exposes every progression model through one common track interface.</td></tr>
+      <tr><td class="id">C8</td><td>Database (User Data + Game Definitions)</td><td>Relational tables for user data with ACID transactions; versioned JSON documents for game definitions.</td></tr>
+      <tr><td class="id">C9</td><td>Data Integrity &amp; Backup Service</td><td>Scheduled reference checks on game data, backups with point-in-time restore, and backup retention.</td></tr>
     </table></div>
 
     <h2 id="component-diagram">UML Component Diagram</h2>
@@ -52,29 +54,32 @@
 
     <h2 id="details">Component Details</h2>
 
-    <div class="card" id="c1"><h3><span class="id">C1</span> User Interface</h3>
-      <div class="todo">Interfaces, responsibilities, and requirements addressed (Matt).</div></div>
+    <div class="card" id="c1"><h3><span class="id">C1</span> Web UI (Presentation Layer)</h3>
+      <div class="todo">Interfaces, responsibilities, and requirements addressed (Matt). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
 
-    <div class="card" id="c2"><h3><span class="id">C2</span> Game Data Adapter</h3>
-      <div class="todo">Interfaces, responsibilities, and requirements addressed (Matt).</div></div>
+    <div class="card" id="c2"><h3><span class="id">C2</span> API Gateway &amp; Authentication</h3>
+      <div class="todo">Interfaces, responsibilities, and requirements addressed (Matt). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
 
-    <div class="card" id="c3"><h3><span class="id">C3</span> Stat Calculator</h3>
-      <div class="todo">Item stats, multipliers, calculation rules, and requirements addressed (Brad).</div></div>
+    <div class="card" id="c3"><h3><span class="id">C3</span> Account Manager</h3>
+      <div class="todo">Interfaces, responsibilities, and requirements addressed (Matt). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
 
-    <div class="card" id="c4"><h3><span class="id">C4</span> Progression Engine</h3>
-      <div class="todo">EXP curve, next-level and target-level calculations, materials, and requirements addressed (Brad).</div></div>
+    <div class="card" id="c4"><h3><span class="id">C4</span> Character &amp; Party Manager</h3>
+      <div class="todo">Interfaces, responsibilities, and requirements addressed (Matt). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
 
-    <div class="card" id="c5"><h3><span class="id">C5</span> Rewards &amp; Unlocks</h3>
-      <div class="todo">Rewards, equipment/item and location unlocks, and requirements addressed (Brad).</div></div>
+    <div class="card" id="c5"><h3><span class="id">C5</span> Progression &amp; Rewards Engine</h3>
+      <div class="todo">Interfaces, responsibilities, and requirements addressed (Brad). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
 
-    <div class="card" id="c6"><h3><span class="id">C6</span> Database</h3>
-      <div class="todo">Data model, storage choice, and requirements addressed (Matt).</div></div>
+    <div class="card" id="c6"><h3><span class="id">C6</span> Stat Calculator</h3>
+      <div class="todo">Interfaces, responsibilities, and requirements addressed (Brad). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
 
-    <div class="card" id="c7"><h3><span class="id">C7</span> Account &amp; Security</h3>
-      <div class="todo">Authentication, authorization, encryption, and account deletion; requirements addressed (FR-1, FR-9, NF-5).</div></div>
+    <div class="card" id="c7"><h3><span class="id">C7</span> Game Data Adapter</h3>
+      <div class="todo">Interfaces, responsibilities, and requirements addressed (Matt). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
 
-    <div class="card" id="c8"><h3><span class="id">C8</span> Party Manager</h3>
-      <div class="todo">Party grouping and summaries; requirements addressed (FR-5, FR-6).</div></div>
+    <div class="card" id="c8"><h3><span class="id">C8</span> Database (User Data + Game Definitions)</h3>
+      <div class="todo">Interfaces, responsibilities, and requirements addressed (Matt). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
+
+    <div class="card" id="c9"><h3><span class="id">C9</span> Data Integrity &amp; Backup Service</h3>
+      <div class="todo">Interfaces, responsibilities, and requirements addressed (Matt). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
 
     <h2 id="class-diagram">UML Class Diagram</h2>
     <div class="todo">Class diagram image (Matt) → <code>images/class-diagram.png</code></div>

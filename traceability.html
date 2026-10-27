@@ -22,41 +22,89 @@
     </div>
   </header>
   <main>
-    <h2>Requirements Traceability Matrix</h2>
-    <p>Each row is a requirement from the <a href="requirements.html">Requirements</a> page; each column is a component from the <a href="design.html">High-Level Design</a>. A mark means the component contributes to satisfying that requirement. Every requirement maps to at least one component, and every component traces back to at least one requirement.</p>
-    <div class="todo">Matrix from Jack. Put an X where a component helps satisfy a requirement.</div>
-    <div class="table-wrap"><table class="matrix">
-      <tr><th>Requirement</th><th>C1 UI</th><th>C2 Game Data</th><th>C3 Stats</th><th>C4 Progression</th><th>C5 Rewards</th><th>C6 Database</th><th>C7 Account</th><th>C8 Party</th></tr>
-      <tr><td class="id">FR-1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">FR-2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">FR-3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">FR-4</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">FR-4.1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">FR-4.2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">FR-4.3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">FR-4.4</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">FR-4.5</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">FR-4.6</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">FR-5</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">FR-6</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">FR-7</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">FR-8</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">FR-9</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">NF-1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">NF-2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">NF-3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">NF-4.1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">NF-4.2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">NF-4.3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">NF-4.4</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">NF-5.1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">NF-5.2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">NF-6</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">NF-7</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">NF-8</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">NF-9</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><td class="id">NF-10</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <div class="toc"><strong>On this page</strong><ol>
+      <li><a href="#index">Design Component Index</a></li>
+      <li><a href="#forward">Requirements to Components</a></li>
+      <li><a href="#reverse">Components to Requirements</a></li>
+      <li><a href="#notes">Coverage Notes</a></li>
+    </ol></div>
+
+    <p>This page shows how each requirement maps to the design components that satisfy it. Requirement IDs (<span class="id">FR-x</span>, <span class="id">NF-x</span>) come from the <a href="requirements.html">Requirements Summary</a>. Component IDs (<span class="id">C1</span>–<span class="id">C9</span>) come from the <a href="design.html">High-Level Design</a>. A dot (●) means the component is directly responsible for all or part of that requirement.</p>
+
+    <h2 id="index">Design Component Index</h2>
+    <div class="table-wrap"><table>
+      <tr><th>ID</th><th>Component</th></tr>
+      <tr><td class="id">C1</td><td><a href="design.html#c1">Web UI (Presentation Layer)</a></td></tr>
+      <tr><td class="id">C2</td><td><a href="design.html#c2">API Gateway &amp; Authentication</a></td></tr>
+      <tr><td class="id">C3</td><td><a href="design.html#c3">Account Manager</a></td></tr>
+      <tr><td class="id">C4</td><td><a href="design.html#c4">Character &amp; Party Manager</a></td></tr>
+      <tr><td class="id">C5</td><td><a href="design.html#c5">Progression &amp; Rewards Engine</a></td></tr>
+      <tr><td class="id">C6</td><td><a href="design.html#c6">Stat Calculator</a></td></tr>
+      <tr><td class="id">C7</td><td><a href="design.html#c7">Game Data Adapter</a></td></tr>
+      <tr><td class="id">C8</td><td><a href="design.html#c8">Database (User Data + Game Definitions)</a></td></tr>
+      <tr><td class="id">C9</td><td><a href="design.html#c9">Data Integrity &amp; Backup Service</a></td></tr>
     </table></div>
+
+    <h2 id="forward">Requirements to Components</h2>
+    <div class="table-wrap"><table class="matrix">
+      <tr><th>Requirement</th><th>C1</th><th>C2</th><th>C3</th><th>C4</th><th>C5</th><th>C6</th><th>C7</th><th>C8</th><th>C9</th></tr>
+      <tr><th colspan="10">Functional Requirements</th></tr>
+      <tr><td><span class="id">FR-1</span> Create account, sign in and out</td><td class="x">●</td><td class="x">●</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x"></td></tr>
+      <tr><td><span class="id">FR-2</span> Add games; create, edit, delete characters per game</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x">●</td><td class="x"></td></tr>
+      <tr><td><span class="id">FR-3</span> Manually enter and update level, EXP, account progression</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x">●</td><td class="x"></td></tr>
+      <tr><td><span class="id">FR-4</span> Consolidated per-character view</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td></tr>
+      <tr><td><span class="id">FR-4.1</span> EXP to next level and progress</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x"></td></tr>
+      <tr><td><span class="id">FR-4.2</span> Level-up materials for next level</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x"></td></tr>
+      <tr><td><span class="id">FR-4.3</span> Rewards granted at each level</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x"></td></tr>
+      <tr><td><span class="id">FR-4.4</span> Before/after stat comparison</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x">●</td><td class="x"></td><td class="x"></td></tr>
+      <tr><td><span class="id">FR-4.5</span> Equipment and items unlocked per level</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x"></td></tr>
+      <tr><td><span class="id">FR-4.6</span> Locations unlocked per level</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x"></td></tr>
+      <tr><td><span class="id">FR-5</span> Group characters into parties</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x">●</td><td class="x"></td></tr>
+      <tr><td><span class="id">FR-6</span> Party summary</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td></tr>
+      <tr><td><span class="id">FR-7</span> Target-level cumulative EXP, materials, rewards</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td></tr>
+      <tr><td><span class="id">FR-8</span> Games stored as data; multiple progression models</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x">●</td><td class="x"></td></tr>
+      <tr><td><span class="id">FR-9</span> Persist across sessions/devices; permanent account deletion</td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x">●</td></tr>
+      <tr><th colspan="10">Non-Functional Requirements</th></tr>
+      <tr><td><span class="id">NF-1</span> 99% monthly availability</td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x">●</td></tr>
+      <tr><td><span class="id">NF-2</span> 200 concurrent active users</td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x">●</td><td class="x">●</td><td class="x"></td><td class="x"></td></tr>
+      <tr><td><span class="id">NF-3</span> 5,000 registered users</td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x"></td></tr>
+      <tr><td><span class="id">NF-4.1</span> Screen reader support, text alternatives</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td></tr>
+      <tr><td><span class="id">NF-4.2</span> Cross-browser support</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td></tr>
+      <tr><td><span class="id">NF-4.3</span> Cross-device support</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td></tr>
+      <tr><td><span class="id">NF-4.4</span> Color-contrast ratios</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td></tr>
+      <tr><td><span class="id">NF-5.1</span> Encrypt sensitive user data</td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x"></td></tr>
+      <tr><td><span class="id">NF-5.2</span> Prevent unauthorized view/modify</td><td class="x"></td><td class="x">●</td><td class="x">●</td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td></tr>
+      <tr><td><span class="id">NF-6</span> Store at least 200 games</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x">●</td><td class="x"></td></tr>
+      <tr><td><span class="id">NF-7</span> Add games without changing app logic</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x">●</td><td class="x"></td></tr>
+      <tr><td><span class="id">NF-8</span> Regular reference checks on progression data</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x">●</td></tr>
+      <tr><td><span class="id">NF-9</span> No race conditions in DB transactions</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x"></td></tr>
+      <tr><td><span class="id">NF-10</span> Backups and restore</td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x"></td><td class="x">●</td><td class="x">●</td></tr>
+    </table></div>
+
+    <h2 id="reverse">Components to Requirements</h2>
+    <p>The reverse view lists the requirements each component exists to satisfy. Every component traces back to at least one requirement, so the design has no orphan components.</p>
+    <div class="table-wrap"><table>
+      <tr><th>ID</th><th>Component</th><th>Requirements Satisfied</th></tr>
+      <tr><td class="id">C1</td><td>Web UI (Presentation Layer)</td><td>FR-1, FR-2, FR-3, FR-4, FR-4.1, FR-4.2, FR-4.3, FR-4.4, FR-4.5, FR-4.6, FR-5, FR-6, FR-7, NF-4.1, NF-4.2, NF-4.3, NF-4.4</td></tr>
+      <tr><td class="id">C2</td><td>API Gateway &amp; Authentication</td><td>FR-1, NF-1, NF-2, NF-5.1, NF-5.2</td></tr>
+      <tr><td class="id">C3</td><td>Account Manager</td><td>FR-1, FR-9, NF-3, NF-5.2</td></tr>
+      <tr><td class="id">C4</td><td>Character &amp; Party Manager</td><td>FR-2, FR-3, FR-5, FR-6, FR-9, NF-5.2, NF-9</td></tr>
+      <tr><td class="id">C5</td><td>Progression &amp; Rewards Engine</td><td>FR-4, FR-4.1, FR-4.2, FR-4.3, FR-4.5, FR-4.6, FR-6, FR-7, NF-2</td></tr>
+      <tr><td class="id">C6</td><td>Stat Calculator</td><td>FR-4, FR-4.4, FR-7, NF-2</td></tr>
+      <tr><td class="id">C7</td><td>Game Data Adapter</td><td>FR-2, FR-3, FR-4.1, FR-4.2, FR-4.3, FR-4.4, FR-4.5, FR-4.6, FR-5, FR-8, NF-2, NF-6, NF-7, NF-8</td></tr>
+      <tr><td class="id">C8</td><td>Database (User Data + Game Definitions)</td><td>FR-1, FR-2, FR-3, FR-5, FR-8, FR-9, NF-1, NF-3, NF-5.1, NF-6, NF-7, NF-9, NF-10</td></tr>
+      <tr><td class="id">C9</td><td>Data Integrity &amp; Backup Service</td><td>FR-9, NF-1, NF-8, NF-10</td></tr>
+    </table></div>
+
+    <h2 id="notes">Coverage Notes</h2>
+    <ul>
+      <li><strong>Full coverage.</strong> Every functional and non-functional requirement maps to at least one component, and every component maps to at least one requirement.</li>
+      <li><strong>The consolidated view (FR-4) is shared work.</strong> No single component produces it. C5 computes EXP, materials, rewards, and unlocks (FR-4.1 to 4.3, 4.5, 4.6). C6 computes stat deltas (FR-4.4). Both read game rules through C7, and C1 renders the combined result in one view. FR-7 is the same calculation run over a range of levels.</li>
+      <li><strong>Extensibility is concentrated in C7 and C8.</strong> FR-8, NF-6, and NF-7 are met because game rules are stored as data (C8) and normalized by the Game Data Adapter (C7). The calculation components never contain game-specific code.</li>
+      <li><strong>Security is enforced at one boundary.</strong> NF-5.2 is enforced first by C2, which authenticates every request. C3 and C4 then confirm that the user owns each account, character, and party record before reading or changing it.</li>
+      <li><strong>Accessibility belongs to C1 alone.</strong> NF-4.1 to NF-4.4 are presentation concerns. Because C1 receives plain structured data from the API, every chart can also be rendered as a data table for screen readers.</li>
+    </ul>
+    <p>See the <a href="rationale.html">Design Rationale</a> for why the components are divided this way. Each design decision there names the requirements that drive it.</p>
 
   </main>
   <footer><div class="inner">CS 5744 Project 1 · Group 07 · Andre, Brad, Jack, Matt, Mustafa, Sophia</div></footer>

@@ -23,23 +23,124 @@
   </header>
   <main>
     <div class="toc"><strong>On this page</strong><ol>
-      <li><a href="#decisions">Key Design Decisions</a></li>
-      <li><a href="#evolution">Design Evolution and Brittleness</a></li>
+      <li><a href="#summary">Summary of Key Design Decisions</a></li>
+      <li><a href="#dd-1">DD-1 to DD-10 in detail</a></li>
+      <li><a href="#evolution">Design Evolution</a></li>
+      <li><a href="#conclusion">Summary</a></li>
     </ol></div>
 
-    <h2 id="decisions">Key Design Decisions</h2>
-    <p>Each decision below is driven by one or more requirements. For each one we list the alternatives we considered and explain why the chosen design best satisfies those requirements.</p>
-    <div class="todo">Decisions from Jack. Format for each decision: the decision, the driving requirements, the alternatives considered, the choice, and the justification.</div>
+    <p>The RPG Character Progression Tracker has one core difficulty. It must present one consistent, consolidated view of progression for many RPGs whose progression rules differ widely. Some games level each character separately. Some level the whole account. Some use both, and every game has its own EXP curves, materials, stat formulas, and unlocks. Most of the decisions below follow from treating that variation as data, not as code. The remaining decisions cover persistence, security, scale, and accessibility.</p>
+    <p>Each decision lists the requirements that drive it, the alternatives we considered, the option we chose and why, and the costs we accepted. Component IDs (<span class="id">C1</span>–<span class="id">C9</span>) refer to the <a href="design.html">High-Level Design</a>. The <a href="traceability.html">Traceability Matrix</a> gives the full mapping from requirements to components.</p>
 
-    <div class="card"><h3><span class="id">DD-1</span> (decision title)</h3>
-      <p><strong>Driving requirements:</strong> <span class="id">FR-?</span>, <span class="id">NF-?</span></p>
-      <p><strong>Alternatives considered:</strong> …</p>
-      <p><strong>Decision:</strong> …</p>
-      <p><strong>Justification:</strong> …</p>
+    <h2 id="summary">Summary of Key Design Decisions</h2>
+    <div class="table-wrap"><table>
+      <tr><th>ID</th><th>Decision</th><th>Driving Requirements</th><th>Components</th></tr>
+      <tr><td class="id"><a href="#dd-1">DD-1</a></td><td>Layered client–server web application</td><td>FR-9, NF-1, NF-2, NF-4.2, NF-4.3</td><td>C1–C9</td></tr>
+      <tr><td class="id"><a href="#dd-2">DD-2</a></td><td>Game progression rules stored as data, not code</td><td>FR-8, NF-6, NF-7</td><td>C7, C8</td></tr>
+      <tr><td class="id"><a href="#dd-3">DD-3</a></td><td>A Game Data Adapter normalizes all progression models into one internal model</td><td>FR-3, FR-4, FR-5, FR-8, NF-7</td><td>C7, C5, C6</td></tr>
+      <tr><td class="id"><a href="#dd-4">DD-4</a></td><td>Stateless, separate calculation components for progression and stats</td><td>FR-4, FR-6, FR-7, NF-2</td><td>C5, C6</td></tr>
+      <tr><td class="id"><a href="#dd-5">DD-5</a></td><td>One aggregated endpoint for each consolidated view</td><td>FR-4, FR-6, FR-7, NF-2</td><td>C1, C2, C5, C6</td></tr>
+      <tr><td class="id"><a href="#dd-6">DD-6</a></td><td>Relational database with transactions; game definitions as versioned documents</td><td>FR-9, NF-3, NF-6, NF-9</td><td>C8, C4</td></tr>
+      <tr><td class="id"><a href="#dd-7">DD-7</a></td><td>Authentication at one gateway, plus ownership checks and encryption</td><td>FR-1, NF-5.1, NF-5.2</td><td>C2, C3, C4, C8</td></tr>
+      <tr><td class="id"><a href="#dd-8">DD-8</a></td><td>Manual progress entry, validated against the game definition</td><td>FR-3, NF-8</td><td>C1, C4, C7</td></tr>
+      <tr><td class="id"><a href="#dd-9">DD-9</a></td><td>Separate integrity and backup service, with deletion that also reaches backups</td><td>FR-9, NF-1, NF-8, NF-10</td><td>C9, C8, C3</td></tr>
+      <tr><td class="id"><a href="#dd-10">DD-10</a></td><td>Responsive, semantic, accessibility-first UI</td><td>NF-4.1–NF-4.4</td><td>C1</td></tr>
+    </table></div>
+
+    <div class="card" id="dd-1"><h3><span class="id">DD-1</span> Layered Client–Server Web Application</h3>
+      <p><strong>Driving requirements:</strong> FR-9 (data available across sessions and devices), NF-1 (99% availability), NF-2 (200 concurrent users), NF-4.2 and NF-4.3 (works across browsers and devices).</p>
+      <p><strong>Alternatives considered:</strong> (a) a native desktop or mobile application with local storage; (b) a thick client that syncs to a cloud store; (c) a layered web application with a thin browser client.</p>
+      <p><strong>Decision.</strong> The system is a layered web application. Its layers are presentation (C1), an API gateway (C2), application services (C3–C7, C9), and persistence (C8). Each layer calls only the layer directly below it.</p>
+      <p><strong>Justification.</strong> FR-9 requires the same characters and parties on every device a user signs in from. With a local-storage client (a), that requirement turns into a synchronization problem, including conflict resolution when two devices edit the same character offline. A thick syncing client (b) solves FR-9, but it duplicates the game rules on every platform, and every platform would need an update whenever a game is added. That conflicts with NF-7. A browser client served from one backend meets NF-4.2 and NF-4.3 with one code base. It also keeps all game rules and user data in one authoritative place. Layering lets the application services stay stateless (see DD-4), so we can add servers behind a load balancer to meet NF-2 and keep the system running when one server fails (NF-1).</p>
+      <p><strong>Trade-offs.</strong> The tracker needs a network connection to work. We accept this because users check progression while they are already online to play. Each request also crosses several layers, which adds latency. DD-5 addresses that cost.</p>
     </div>
 
-    <h2 id="evolution">Design Evolution and Brittleness</h2>
-    <div class="todo">How the design handles likely changes, such as new games or data sources, new progression models, or more users, and which parts would be affected. The peer review rubric scores "evolution" and "brittleness" explicitly.</div>
+    <div class="card" id="dd-2"><h3><span class="id">DD-2</span> Game Progression Rules Stored as Data, Not Code</h3>
+      <p><strong>Driving requirements:</strong> FR-8 (games stored as data that defines progression mechanics), NF-6 (at least 200 games), NF-7 (add games without major changes to existing data or application logic).</p>
+      <p><strong>Alternatives considered:</strong> (a) one hard-coded module per game; (b) a plug-in architecture with one compiled plug-in per game; (c) a declarative game definition, interpreted by generic code.</p>
+      <p><strong>Decision.</strong> Each supported game is described by a game definition. This is a structured document holding the game's level caps, EXP curve (as a table or a formula), stat growth tables, materials per level, rewards per level, equipment and location unlocks, and the game's progression model and party rules. Definitions are stored in C8. The application code reads them but never contains game-specific logic.</p>
+      <p><strong>Justification.</strong> With 200 or more games (NF-6), options (a) and (b) mean writing, testing, and deploying 200 code modules. Adding a game would be a code change and a release, which is what NF-7 rules out. Plug-ins (b) isolate games from each other better than (a), but they still need developers for every new title. A declarative definition (c) is the most direct reading of FR-8. It turns "add a game" into a data-entry task, and it lets us check a game's data with a schema validator before it goes live. Game designers already publish progression as tables (EXP per level, materials per ascension), and those tables map naturally onto this format.</p>
+      <p><strong>Trade-offs.</strong> A data format cannot express every possible rule. A game with very unusual mechanics may need a schema extension. We limit this risk with DD-3: the format allows several progression models, and the adapter is the only place that has to change when a new model appears.</p>
+    </div>
+
+    <div class="card" id="dd-3"><h3><span class="id">DD-3</span> A Game Data Adapter Normalizes All Progression Models</h3>
+      <p><strong>Driving requirements:</strong> FR-8 (level-based, account-wide, and character-specific models), FR-3 (account-level progression where the game defines it), FR-4 (one consistent view for every game), FR-5 (parties only in games that support them), NF-7.</p>
+      <p><strong>Alternatives considered:</strong> (a) give the calculation components a branch for each progression model; (b) put an adapter between the stored definitions and the rest of the system.</p>
+      <p><strong>Decision.</strong> The Game Data Adapter (C7) reads a raw game definition and presents it to the rest of the system through one internal interface. The interface answers four kinds of questions: what is required to go from level n to n+1 for this progression track, what is granted at level n, which stats change at level n, and what this game supports (parties, account levels, level caps). Each of a character's progression tracks, and the account's own track where the game has one, is exposed as a track with the same shape.</p>
+      <p><strong>Justification.</strong> If the Progression Engine (C5) and Stat Calculator (C6) branched on progression model (a), every new model would require edits to both, and every combination of models would need its own tests. The adapter follows the Adapter pattern. It confines model-specific knowledge to one component, so C5 and C6 can work with any game. FR-4 asks for a single consolidated view whatever the game. The adapter is what makes that possible, because C1 always receives the same structure. It also answers FR-5's "for games that support parties": C4 and C1 ask the adapter whether to allow and display parties, so they never check which game it is.</p>
+      <p><strong>Trade-offs.</strong> The adapter adds a layer of indirection, and its interface has to be designed with care. A poor interface would leak game-specific detail into C5 and C6. The adapter also caches parsed definitions, because definitions are read constantly and change rarely. This supports NF-2.</p>
+    </div>
+
+    <div class="card" id="dd-4"><h3><span class="id">DD-4</span> Stateless, Separate Calculation Components</h3>
+      <p><strong>Driving requirements:</strong> FR-4.1–FR-4.6 (consolidated per-character view), FR-6 (party summary), FR-7 (cumulative totals up to a target level), NF-2 (200 concurrent users).</p>
+      <p><strong>Alternatives considered:</strong> (a) precompute every character's view and store it in the database; (b) compute on demand in one combined service; (c) compute on demand in two separate stateless components.</p>
+      <p><strong>Decision.</strong> Two stateless components compute progression results on demand from (character state, game definition). The Progression and Rewards Engine (C5) computes EXP, materials, rewards, and equipment and location unlocks. The Stat Calculator (C6) computes before-and-after stats and their differences.</p>
+      <p><strong>Justification.</strong> Precomputing (a) looks fast, but stored results would go stale whenever a user edits a level (FR-3) or a game definition is corrected (NF-8). We would then need cache-invalidation logic across thousands of characters. The calculations themselves are inexpensive: table lookups and short sums over at most a few hundred levels. Computing on demand is therefore fast enough and always correct. We separated stat calculation from progression (c instead of b) because the two change for different reasons. Stat formulas are the most game-specific and most complex part of a definition (base values, growth rates, multipliers). Rewards and unlocks are simple lookups. Separating them keeps each component cohesive and lets each be tested on its own. FR-7 reuses the same functions: the cumulative view folds the single-level calculation over the range from the current level to the target. Because both components hold no session state, any server can handle any request, which makes horizontal scaling for NF-2 straightforward.</p>
+      <p><strong>Trade-offs.</strong> Some work is repeated across requests. The cached definitions from DD-3 and the small size of each calculation keep that cost low.</p>
+    </div>
+
+    <div class="card" id="dd-5"><h3><span class="id">DD-5</span> One Aggregated Endpoint for Each Consolidated View</h3>
+      <p><strong>Driving requirements:</strong> FR-4 (one consolidated view), FR-6 (party summary), FR-7 (target-level totals), NF-2.</p>
+      <p><strong>Alternatives considered:</strong> (a) fine-grained REST endpoints, which the browser calls separately for EXP, materials, rewards, stats, and unlocks, then combines; (b) one aggregated endpoint per view, assembled on the server.</p>
+      <p><strong>Decision.</strong> The gateway (C2) exposes one endpoint for each view: character view, party summary, and target-level plan. Each request calls C5 and C6 on the server and returns one combined response to C1.</p>
+      <p><strong>Justification.</strong> FR-4's main promise is that the user no longer has to look across several screens. Option (a) would just move that scattering into the client. Showing one character would take five or more network calls, and a six-member party summary (FR-6) would take thirty. Under 200 concurrent users (NF-2), that request volume dominates load. It also hurts users on mobile networks, who matter for NF-4.3. Server-side aggregation keeps the client simple and the response consistent, since every part is computed from the same snapshot of the character. It also gives C1 a single, stable contract to render.</p>
+      <p><strong>Trade-offs.</strong> An aggregated response can include data a particular screen does not show. We accept slightly larger responses in exchange for fewer round trips and a simpler client.</p>
+    </div>
+
+    <div class="card" id="dd-6"><h3><span class="id">DD-6</span> Relational Database with Transactions; Game Definitions as Versioned Documents</h3>
+      <p><strong>Driving requirements:</strong> FR-9 (persist accounts, characters, parties, and progression), NF-3 (5,000 users), NF-6 (200 games), NF-9 (no race conditions in database transactions).</p>
+      <p><strong>Alternatives considered:</strong> (a) a pure document (NoSQL) store for everything; (b) a fully normalized relational schema for everything, with every game rule as rows; (c) a relational store for user data plus versioned JSON documents for game definitions, in the same database.</p>
+      <p><strong>Decision.</strong> User data (accounts, game memberships, characters, parties, party members, progression records) lives in relational tables with foreign keys and ACID transactions. Each game definition is stored as a versioned JSON document in the same database, keyed by game ID and version.</p>
+      <p><strong>Justification.</strong> User data is highly relational. A party belongs to an account and references characters, and each character references a game. Deleting an account (FR-9) must remove all of these together. Foreign keys with cascading deletes and transactions handle this correctly. Transactions with row-level locking or optimistic version checks also meet NF-9. For example, two devices updating the same character's level at once cannot silently overwrite each other. Game definitions are different. Their shape varies from game to game, and they are read as a whole. Forcing every game into a fixed normalized schema (b) would undo the flexibility of DD-2. Storing them as documents (c) keeps that flexibility. Version numbers let a corrected definition (NF-8) be published without changing history, and let a bad update be rolled back. The data volume involved (5,000 users and 200 games) is small for a single relational database. So NF-3 and NF-6 can be met without sharding, and adding a read replica later is simple.</p>
+      <p><strong>Trade-offs.</strong> The database must check the internal structure of definition documents at write time, because the relational schema does not enforce it. C7 and C9 perform this check against a definition schema (see DD-9).</p>
+    </div>
+
+    <div class="card" id="dd-7"><h3><span class="id">DD-7</span> Authentication at One Gateway, Ownership Checks, and Encryption</h3>
+      <p><strong>Driving requirements:</strong> FR-1 (accounts, sign-in, sign-out), NF-5.1 (encrypt sensitive data), NF-5.2 (prevent unauthorized access to private progression data).</p>
+      <p><strong>Alternatives considered:</strong> (a) each service authenticates requests itself; (b) one gateway authenticates every request, and the domain services check ownership.</p>
+      <p><strong>Decision.</strong> C2 terminates TLS, validates the session token on every request, and passes a verified user ID to the services behind it. C3 and C4 confirm that the requested account, character, or party belongs to that user before any read or write. Passwords are stored only as salted, slow hashes. The database and its backups are encrypted at rest.</p>
+      <p><strong>Justification.</strong> Putting authentication in one place (b) means no endpoint can be accidentally left unprotected. With approach (a), every new service is another chance to forget a check. Authentication alone does not meet NF-5.2, though. A signed-in user who changes a character ID in a request must still be refused. That is why the ownership check sits in the components that own the data. Encryption in transit and at rest, plus password hashing, means a compromised disk or backup does not expose account data. This is the "in case the system is compromised" scenario in NF-5.1.</p>
+      <p><strong>Trade-offs.</strong> Encryption and hashing add a small CPU cost to sign-in and storage. This is negligible at the scale in NF-2 and NF-3.</p>
+    </div>
+
+    <div class="card" id="dd-8"><h3><span class="id">DD-8</span> Manual Progress Entry, Validated Against the Game Definition</h3>
+      <p><strong>Driving requirements:</strong> FR-3 (manually enter and update level, EXP, and account progression), NF-8 (displayed progression stays accurate).</p>
+      <p><strong>Alternatives considered:</strong> (a) import progress automatically through game publisher APIs; (b) manual entry with no validation; (c) manual entry validated through the adapter.</p>
+      <p><strong>Decision.</strong> Users enter their level and EXP by hand, as FR-3 specifies. Before C4 saves the values, it uses C7 to confirm that the level is within the game's cap and that the EXP is within the range for that level.</p>
+      <p><strong>Justification.</strong> Few RPG publishers offer public progression APIs, and those that do differ completely. Building on them (a) would make the system depend on third parties and break NF-7. Manual entry works for every game. Without validation (b), though, one typo (level 900 in a game capped at 90) would produce a nonsense consolidated view. Validating through the adapter keeps the check generic, because the cap and EXP range come from the definition, so no game-specific code is needed.</p>
+      <p><strong>Trade-offs.</strong> Users must keep their own numbers up to date. The architecture leaves room to change this later (see <a href="#evolution">Design Evolution</a>).</p>
+    </div>
+
+    <div class="card" id="dd-9"><h3><span class="id">DD-9</span> Separate Integrity and Backup Service</h3>
+      <p><strong>Driving requirements:</strong> NF-8 (regular reference checks), NF-10 (backups and restore), NF-1 (availability), FR-9 (permanent deletion of an account and all associated data).</p>
+      <p><strong>Alternatives considered:</strong> (a) run checks and backups inside the request-handling services; (b) a separate background service.</p>
+      <p><strong>Decision.</strong> The Data Integrity and Backup Service (C9) runs on a schedule, outside the request path. It (1) checks every game definition against the definition schema and for broken references, such as a reward that names an item no longer defined or an EXP curve that does not increase, and flags problems for maintainers; (2) takes regular database snapshots plus continuous transaction logs for point-in-time restore; and (3) expires backups on a fixed retention window, so that data from a deleted account cannot remain in backups indefinitely.</p>
+      <p><strong>Justification.</strong> NF-8 and NF-10 are periodic maintenance tasks. Running them in the request path (a) would slow user requests and couple maintenance to traffic, which works against NF-1 and NF-2. A separate service can run at low-traffic times and fail without affecting users. FR-9 and NF-10 pull in opposite directions: deletion must be permanent, but backups exist to keep data. A fixed retention window resolves this. A deleted account is removed from the live database at once and disappears from every backup once the window expires. We state this policy openly on the account-deletion screen.</p>
+      <p><strong>Trade-offs.</strong> One more component to deploy and monitor. Restoring from a backup taken before a deletion could bring the deleted account back, so C9 keeps a deletion log and re-applies it after any restore.</p>
+    </div>
+
+    <div class="card" id="dd-10"><h3><span class="id">DD-10</span> Responsive, Semantic, Accessibility-First UI</h3>
+      <p><strong>Driving requirements:</strong> NF-4.1 (screen readers and text alternatives), NF-4.2 (cross-browser), NF-4.3 (cross-device), NF-4.4 (color contrast).</p>
+      <p><strong>Alternatives considered:</strong> (a) a canvas-heavy, game-styled interface; (b) semantic HTML with responsive layout, where every chart is backed by a data table.</p>
+      <p><strong>Decision.</strong> C1 is built from standard semantic HTML elements and ARIA labels, using a single responsive layout. Every chart (EXP progress, stat comparison) is generated from the same structured data as an accessible table, and every icon and item image has a text label. The color palette is checked against WCAG AA contrast ratios.</p>
+      <p><strong>Justification.</strong> A canvas-based interface (a) is opaque to screen readers, so NF-4.1 would have to be retrofitted for every view. Since DD-5 already delivers plain structured data, C1 can render both a visual and a textual version of each view at little extra cost. Standard HTML and CSS work in all current browsers (NF-4.2). One responsive layout serves phones and desktops (NF-4.3) without a separate mobile application.</p>
+      <p><strong>Trade-offs.</strong> The interface is less visually immersive than a game-styled one. We judged correctness and access more important for a reference tool.</p>
+    </div>
+
+    <h2 id="evolution">Design Evolution</h2>
+    <p>We evaluated the design against the changes we consider most likely after launch. For each one, the table names the components that would change.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Likely change</th><th>Impact on the design</th></tr>
+      <tr><td>A new game is released</td><td>Add a new game definition to C8. C9 validates it. No code changes (DD-2, NF-7).</td></tr>
+      <tr><td>A game introduces a new kind of progression (e.g., a skill tree or prestige resets)</td><td>Extend the definition schema and the adapter (C7) only. C5, C6, and C1 continue to consume the same track interface (DD-3).</td></tr>
+      <tr><td>A game patch changes its EXP curve or rewards</td><td>Publish a new version of the definition. C9's reference checks catch inconsistencies (DD-6, DD-9, NF-8).</td></tr>
+      <tr><td>A publisher releases a progression API</td><td>Add an importer behind C4 that writes the same validated progress records that manual entry produces. The rest of the system is unchanged (DD-8).</td></tr>
+      <tr><td>A native mobile app is requested</td><td>The app consumes the same aggregated endpoints from C2. No backend changes (DD-1, DD-5).</td></tr>
+      <tr><td>User growth well beyond NF-2 and NF-3</td><td>Add stateless service instances and a database read replica. No change to component boundaries (DD-1, DD-4, DD-6).</td></tr>
+    </table></div>
+
+    <h2 id="conclusion">Summary</h2>
+    <p>The central decision is to treat game rules as data (DD-2) behind a single adapter (DD-3). That decision is what lets one generic set of calculation components (DD-4) produce a single consolidated view (DD-5) for any number of very different RPGs. The remaining decisions keep that core reliable, secure, and accessible. They provide transactional user data (DD-6), centralized authentication with ownership checks (DD-7), validated input (DD-8), background integrity checks and backups (DD-9), and an accessible interface (DD-10). Every decision is traced to one or more requirements, and the components most likely to change are isolated so that change stays local.</p>
 
   </main>
   <footer><div class="inner">CS 5744 Project 1 · Group 07 · Andre, Brad, Jack, Matt, Mustafa, Sophia</div></footer>
