@@ -26,66 +26,138 @@
       <li><a href="#overview">Architecture Overview</a></li>
       <li><a href="#components">Component Summary</a></li>
       <li><a href="#component-diagram">UML Component Diagram</a></li>
-      <li><a href="#details">Component Details</a></li>
-      <li><a href="#class-diagram">UML Class Diagram</a></li>
-      <li><a href="#sequence">UML Sequence Diagrams</a></li>
+      <li><a href="#details">Component Details (C1–C9)</a></li>
+      <li><a href="#sequence">UML Sequence Diagram</a></li>
     </ol></div>
 
     <h2 id="overview">Architecture Overview</h2>
     <p>The system is a layered client–server web application (see <a href="rationale.html#dd-1">DD-1</a>). The browser UI (C1) talks only to the API Gateway (C2). Behind the gateway, application services handle accounts (C3), characters and parties (C4), progression and rewards (C5), and stats (C6). Both calculation components read game rules through the Game Data Adapter (C7), so no component contains game-specific code. All data lives in one database (C8), and a background service (C9) checks data integrity and manages backups.</p>
-    <div class="todo">Matt's architecture narrative and diagrams.</div>
+    <p>Each component below lists the requirements it satisfies. The full mapping is on the <a href="traceability.html">Traceability</a> page.</p>
 
     <h2 id="components">Component Summary</h2>
     <div class="table-wrap"><table>
       <tr><th>ID</th><th>Component</th><th>Responsibility</th></tr>
-      <tr><td class="id">C1</td><td>Web UI (Presentation Layer)</td><td>Semantic, responsive browser interface for accounts, games, characters, parties, and the consolidated progression view.</td></tr>
-      <tr><td class="id">C2</td><td>API Gateway &amp; Authentication</td><td>Single entry point: terminates TLS, validates sessions, and exposes one aggregated endpoint per view.</td></tr>
-      <tr><td class="id">C3</td><td>Account Manager</td><td>Sign-up, sign-in/out, account ownership checks, and permanent account deletion.</td></tr>
-      <tr><td class="id">C4</td><td>Character &amp; Party Manager</td><td>Creates, edits, and deletes characters and parties; validates manual level/EXP entry.</td></tr>
-      <tr><td class="id">C5</td><td>Progression &amp; Rewards Engine</td><td>Stateless: computes EXP, materials, rewards, and equipment/location unlocks for next-level and target-level views.</td></tr>
-      <tr><td class="id">C6</td><td>Stat Calculator</td><td>Stateless: computes before-and-after stats and per-stat differences from base values, item stats, and multipliers.</td></tr>
-      <tr><td class="id">C7</td><td>Game Data Adapter</td><td>Reads each game definition and exposes every progression model through one common track interface.</td></tr>
-      <tr><td class="id">C8</td><td>Database (User Data + Game Definitions)</td><td>Relational tables for user data with ACID transactions; versioned JSON documents for game definitions.</td></tr>
-      <tr><td class="id">C9</td><td>Data Integrity &amp; Backup Service</td><td>Scheduled reference checks on game data, backups with point-in-time restore, and backup retention.</td></tr>
+      <tr><td class="id"><a href="#c1">C1</a></td><td>Web UI (Presentation Layer)</td><td>Semantic, responsive browser interface for accounts, games, characters, parties, and the consolidated progression view.</td></tr>
+      <tr><td class="id"><a href="#c2">C2</a></td><td>API Gateway &amp; Authentication</td><td>Single entry point: terminates TLS, validates sessions, and exposes one aggregated endpoint per view.</td></tr>
+      <tr><td class="id"><a href="#c3">C3</a></td><td>Account Manager</td><td>Sign-up, sign-in/out, account ownership checks, and permanent account deletion.</td></tr>
+      <tr><td class="id"><a href="#c4">C4</a></td><td>Character &amp; Party Manager</td><td>Creates, edits, and deletes characters and parties; validates manual level/EXP entry.</td></tr>
+      <tr><td class="id"><a href="#c5">C5</a></td><td>Progression &amp; Rewards Engine</td><td>Stateless: computes EXP, materials, rewards, and equipment/location unlocks for next-level and target-level views.</td></tr>
+      <tr><td class="id"><a href="#c6">C6</a></td><td>Stat Calculator</td><td>Stateless: computes before-and-after stats and per-stat differences from base values, item stats, and multipliers.</td></tr>
+      <tr><td class="id"><a href="#c7">C7</a></td><td>Game Data Adapter</td><td>Reads each game definition and exposes every progression model through one common interface.</td></tr>
+      <tr><td class="id"><a href="#c8">C8</a></td><td>Database (User Data + Game Definitions)</td><td>Relational tables for user data with ACID transactions; game definition data keyed by game.</td></tr>
+      <tr><td class="id"><a href="#c9">C9</a></td><td>Data Integrity &amp; Backup Service</td><td>Verifies input and stored data, runs scheduled reference checks, and manages backups.</td></tr>
     </table></div>
 
     <h2 id="component-diagram">UML Component Diagram</h2>
-    <div class="todo">Component diagram image (Matt) → <code>images/component-diagram.png</code></div>
+    <figure>
+      <img src="images/component-diagram.png" alt="Component diagram. The player's browser connects to C1 Web UI, which sends HTTPS/JSON requests to C2 API Gateway and Authentication. C2 calls C3 Account Manager, C4 Character and Party Manager, C5 Progression and Rewards Engine, and C6 Stat Calculator. C4, C5, and C6 read game rules through C7 Game Data Adapter. C3, C4, C7, and C9 Data Integrity and Backup Service use C8 Database.">
+      <figcaption>Figure 1. Top-level components and their dependencies, arranged by layer.</figcaption>
+    </figure>
 
     <h2 id="details">Component Details</h2>
 
     <div class="card" id="c1"><h3><span class="id">C1</span> Web UI (Presentation Layer)</h3>
-      <div class="todo">Interfaces, responsibilities, and requirements addressed (Matt). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
+      <p>The UI has four screens. The <strong>Login Screen</strong> handles sign-in, account creation, and account recovery. The <strong>Home Screen</strong> lets the user select a game. The <strong>Progress Screen</strong> adds, finds, updates, and deletes characters, shows the character summary, and shows rewards at each level. The <strong>Profile Screen</strong> lets the user delete their account. Each screen calls the API Gateway (C2) and never talks to a service directly.</p>
+      <p><strong>Requirements:</strong> FR-1, FR-2, FR-3, FR-4 (4.1–4.6), FR-5, FR-6, FR-7, NF-4.1–NF-4.4</p>
+      <figure><img src="images/c1-web-ui.png" alt="UML diagram of UI screens. Login Screen (signIn, createAccount, forgotAccount) navigates to and from Home Screen (selectGame). Home Screen navigates to Progress Screen (addCharacter, deleteCharacter, findCharacter, updateCharacter, characterSummary, viewRewardsAtLevel) and Profile Screen (deleteAccount). Progress and Profile screens navigate back to Login Screen.">
+      <figcaption>Figure 2. General UI design: screens, their operations, and navigation.</figcaption></figure>
+    </div>
 
     <div class="card" id="c2"><h3><span class="id">C2</span> API Gateway &amp; Authentication</h3>
-      <div class="todo">Interfaces, responsibilities, and requirements addressed (Matt). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
+      <p>The Login API is the single place where requests are authenticated. <code>signIn</code> is public; <code>authenticate</code> is internal and verifies the credentials against the stored password hash. After sign-in, the gateway validates the session on every request and passes a verified user ID to the services behind it (see <a href="rationale.html#dd-7">DD-7</a>).</p>
+      <p><strong>Requirements:</strong> FR-1, NF-1, NF-2, NF-5.1, NF-5.2</p>
+      <figure><img src="images/c2-auth-api.png" alt="Login API class with public signIn(username, password) and private authenticate(username, password).">
+      <figcaption>Figure 3. Authentication (Login) API.</figcaption></figure>
+    </div>
 
     <div class="card" id="c3"><h3><span class="id">C3</span> Account Manager</h3>
-      <div class="todo">Interfaces, responsibilities, and requirements addressed (Matt). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
+      <p>The Account API creates accounts, recovers a forgotten username or password by email, and permanently deletes an account and all of its data (FR-9). Before any change, it confirms that the account belongs to the signed-in user.</p>
+      <p><strong>Requirements:</strong> FR-1, FR-9, NF-3, NF-5.2</p>
+      <figure><img src="images/c3-account-manager.png" alt="Account API class with public deleteAccount(), private createAccount(username, password) returning User, and public forgotAccount(username or password) returning an email.">
+      <figcaption>Figure 4. Account Manager API.</figcaption></figure>
+    </div>
 
     <div class="card" id="c4"><h3><span class="id">C4</span> Character &amp; Party Manager</h3>
-      <div class="todo">Interfaces, responsibilities, and requirements addressed (Matt). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
+      <p>The Character Management API lets a user select a game and add, find, update, and delete characters. <code>updateCharacter</code> is the manual entry point for level and EXP (FR-3); values are validated against the game definition through C7 before they are saved (<a href="rationale.html#dd-8">DD-8</a>). Ownership is checked on every read and write.</p>
+      <p><strong>Requirements:</strong> FR-2, FR-3, FR-5, FR-6, FR-9, NF-5.2, NF-9</p>
+      <figure><img src="images/c4-character-manager.png" alt="Character Management API class with selectGame(name), addCharacter(name), deleteCharacter(name), findCharacter(name), and updateCharacter(name, exp).">
+      <figcaption>Figure 5. Character Management API.</figcaption></figure>
+    </div>
 
     <div class="card" id="c5"><h3><span class="id">C5</span> Progression &amp; Rewards Engine</h3>
-      <div class="todo">Interfaces, responsibilities, and requirements addressed (Brad). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
+      <p>This component works out what a character needs to level up and what the character gains by doing so: the EXP and materials required, the rewards, the equipment and locations that unlock, and the totals from the current level to a target level.</p>
+      <h4>Design element DE-5: progression models (Strategy pattern)</h4>
+      <p>The games we support do not all progress in the same way. In some games only characters have a level. In others the account has a level that unlocks content for every character. In others a single character has its own ladder, such as a bond level. The calculations are the same for each: find the EXP needed for a level and add up the EXP and materials over a range of levels. Only finding which ladder applies to a character differs. We therefore chose an object-oriented design in which each way of finding a ladder is an object behind a common interface, known as the Strategy pattern.</p>
+      <ul>
+        <li><strong>ProgressionModelRegistry</strong> reads the scope of each track in the game data and hands the work to the matching TrackResolver.</li>
+        <li><strong>TrackResolver</strong> is an interface implemented by AccountTrackResolver, CharacterTrackResolver, and CharacterSpecificTrackResolver. Each returns a <strong>ResolvedTrack</strong>, which describes a ladder in the same form no matter which model produced it.</li>
+        <li><strong>LevelExpEngine</strong> checks the level and EXP entered by the player, calculates the EXP remaining and the progress toward the next level, finds the materials for the next level, and totals EXP and materials up to a target level. It runs the same calculation for each member of a party.</li>
+      </ul>
+      <p>LevelExpEngine only works with a ResolvedTrack, so a new progression model can be added without changing it. A target level at or below the current level, or above the level cap, is rejected.</p>
+      <h4>Design element DE-6: rewards and unlocks</h4>
+      <p>Each time a character levels up, the game grants rewards: currency, stat increases, items, equipment, and access to locations. Rewards are looked up in the game data, not calculated.</p>
+      <ul>
+        <li><strong>RewardResolver</strong> looks up the rewards for a level or a range of levels. Each reward has a type, a name, lore text, and a text description of its image. Equipment and location rewards also act as the unlock rules for a level. For a range of levels, it adds up currency and stat bonuses and lists each unlocked item and location once.</li>
+      </ul>
+      <p><em>Future extension:</em> the class diagram also shows a <strong>RewardTrackEngine</strong> for battle passes (tiers with their own XP, free and premium reward lanes, and a season end date). Battle passes are not part of the current requirements, so this class is outside the current scope. Because it reuses LevelExpEngine and RewardResolver unchanged, it can be added later without modifying them.</p>
+      <p><strong>Requirements:</strong> FR-4, FR-4.1, FR-4.2, FR-4.3, FR-4.5, FR-4.6, FR-6, FR-7, NF-2</p>
+      <figure><img src="images/c5-progression-rewards-class.png" alt="Class diagram of the Progression and Rewards module: ProgressionModelRegistry delegates to the TrackResolver interface, implemented by AccountTrackResolver, CharacterTrackResolver, and CharacterSpecificTrackResolver, each producing a ResolvedTrack used by LevelExpEngine. RewardResolver handles rewards; RewardTrackEngine (future extension) handles battle pass tiers.">
+      <figcaption>Figure 6. Class diagram of the Progression &amp; Rewards Engine.</figcaption></figure>
+    </div>
 
     <div class="card" id="c6"><h3><span class="id">C6</span> Stat Calculator</h3>
-      <div class="todo">Interfaces, responsibilities, and requirements addressed (Brad). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
+      <p>The Stat Calculator computes the stats of a character at a given level and compares those stats before and after a level-up. The stats take into account the character's equipped items and any multipliers that apply.</p>
+      <h4>Design element DE-4: stat pipeline (Pipe-and-Filter)</h4>
+      <p>A stat value starts as a base value for the character's level. Flat bonuses are added, percentage bonuses are applied together, and multipliers are applied. The result is rounded once at the end. Each step takes the value from the step before it, changes it, and passes it on, which is the Pipe-and-Filter architectural style. Games apply these steps in different orders, so the order of the filters for each stat comes from the game's data, not from code.</p>
+      <div class="table-wrap"><table>
+        <tr><th>Problem element</th><th>Stat calculation</th><th>Level-up comparison</th></tr>
+        <tr><td>Problem definition</td><td>Receives a character, a level, and the equipped items and produces the value of each stat.</td><td>Runs the stat calculation for the current level and the next level and reports the difference.</td></tr>
+        <tr><td>Input</td><td>The base value for the level and the modifiers from equipped items, set bonuses, and multipliers.</td><td>The same modifiers and the two levels to compare.</td></tr>
+        <tr><td>Filters</td><td>Flat, additive percent, multiplier, and rounding filters, in the order set by the game.</td><td>The same filters, run once for each level.</td></tr>
+        <tr><td>Output</td><td>The rounded value of each stat.</td><td>The value before, the value after, the difference, and the source of each modifier.</td></tr>
+      </table></div>
+      <figure><img src="images/c6-stat-pipeline.png" alt="Pipe-and-filter diagram for an attack stat: base 500 at level 40, flat filter adds 120 to 620, additive percent filter applies 30 percent to 806, multiplier filter applies 1.25 to 1007.5, rounding filter gives 1007. Level 41 gives 1023, a gain of 16.">
+      <figcaption>Figure 7. Pipe-and-Filter architecture for calculating a stat.</figcaption></figure>
+      <p><em>Example (Figure 7):</em> the player wants to know what a level-up from 40 to 41 does to a character's attack. The base value at level 40 is 500. The flat filter adds 120 from a weapon to give 620. The additive percent filter adds a 20% set bonus and a 10% passive and applies the total once, giving 806. The multiplier filter applies 1.25 to give 1007.5, and the rounding filter rounds down to 1007. The same pipeline gives 1023 at level 41, so the player sees attack go from 1007 to 1023 (+16), along with the source of each bonus.</p>
+      <ul>
+        <li><strong>StatCalculator</strong> calculates stats and compares stats at two levels.</li>
+        <li><strong>ModifierResolver</strong> turns equipped items, set bonuses, and multipliers into one set of modifiers, each keeping the name of its source.</li>
+        <li><strong>StatPipeline</strong> holds the filters for one stat in the order set by the game and passes the value through them. FlatFilter, AdditivePercentFilter, MultiplierFilter, and RoundingFilter each encapsulate one step.</li>
+        <li><strong>StatComparison</strong> holds the result: the stat, the value before, the value after, the difference, and the sources.</li>
+      </ul>
+      <p>When a comparison is requested, StatCalculator asks ModifierResolver for the character's modifiers, passes each stat's base value at the current level through StatPipeline, then does the same for the next level with the same modifiers, so only the level changes. It returns the results in a StatComparison.</p>
+      <p><strong>Requirements:</strong> FR-4, FR-4.4, FR-7, NF-2</p>
+      <figure><img src="images/c6-stat-calculator-class.png" alt="Class diagram of the Stat Calculator module: StatCalculator uses ModifierResolver and StatPipeline and returns StatComparison; StatPipeline contains FlatFilter, AdditivePercentFilter, MultiplierFilter, and RoundingFilter.">
+      <figcaption>Figure 8. Class diagram of the Stat Calculator.</figcaption></figure>
+    </div>
 
     <div class="card" id="c7"><h3><span class="id">C7</span> Game Data Adapter</h3>
-      <div class="todo">Interfaces, responsibilities, and requirements addressed (Matt). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
+      <p>Games store their data in different shapes. The Game Data Adapter applies the Adapter pattern: the client works only with <code>ClientGameDataInterface</code>, and <code>GameDataAdaptor</code> implements it by transforming each game's raw data into one common <code>GameCharacter</code> model (EXP, level materials, rewards, before/after stats, new equipment and items, and new locations). The rest of the system never needs to know which game the data came from (<a href="rationale.html#dd-3">DD-3</a>).</p>
+      <p><strong>Requirements:</strong> FR-2, FR-3, FR-4.1–FR-4.6, FR-5, FR-8, NF-2, NF-6, NF-7, NF-8</p>
+      <figure><img src="images/c7-game-data-adapter.png" alt="Adapter pattern: Client uses ClientGameDataInterface (TransformCharacterData, StoreCharacterData). GameDataAdaptor implements the interface and produces GameCharacter, which holds exp, levelMaterials, rewards, beforeStats, afterStats, new equipment and items, and new locations, with display_progress and party_summary operations.">
+      <figcaption>Figure 9. Adapter pattern for games with differing data.</figcaption></figure>
+    </div>
 
     <div class="card" id="c8"><h3><span class="id">C8</span> Database (User Data + Game Definitions)</h3>
-      <div class="todo">Interfaces, responsibilities, and requirements addressed (Matt). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
+      <p>A <strong>User</strong> (with a hashed password) has many <strong>Characters</strong>; each character belongs to one <strong>Game</strong>. Each game owns its definition data: <strong>Game_Items</strong> and <strong>Game_Locations</strong> (each with the level that unlocks it), <strong>Game_Materials</strong>, and <strong>Game_Stat_Increases</strong> (a level formula per stat and class). Because game rules are rows of data rather than code, a new game is added by inserting data (FR-8, NF-7).</p>
+      <p><strong>Requirements:</strong> FR-1, FR-2, FR-3, FR-5, FR-8, FR-9, NF-1, NF-3, NF-5.1, NF-6, NF-7, NF-9, NF-10</p>
+      <figure><img src="images/c8-database.png" alt="Database entity diagram: User (Username, Password hash, User_ID) one-to-many Character (EXP, Name, Class, Character_ID, Game_ID). Character one-to-one Game (Name, Game_ID). Game one-to-many Game_Items, Game_Locations, Game_Stat_Increases, and Game_Materials, each keyed by Game_ID.">
+      <figcaption>Figure 10. Database design.</figcaption></figure>
+    </div>
 
     <div class="card" id="c9"><h3><span class="id">C9</span> Data Integrity &amp; Backup Service</h3>
-      <div class="todo">Interfaces, responsibilities, and requirements addressed (Matt). See the <a href="traceability.html#reverse">traceability page</a> for this component's requirements.</div></div>
+      <p>All writes pass through the <strong>Data Verifier</strong>, which checks that the input has the right structure and that the request is authorized before writing to the database. <code>verifyDatabaseIntegrity</code> runs the scheduled reference checks on stored data (NF-8). The same service manages backups and restore (NF-10, <a href="rationale.html#dd-9">DD-9</a>).</p>
+      <p><strong>Requirements:</strong> FR-9, NF-1, NF-8, NF-10</p>
+      <figure><img src="images/c9-data-integrity.png" alt="Input flows into Data Verifier (verifyDatabaseIntegrity, inputToDatabase, checkInputDataStructure, checkAuthorizedRequest), which writes to the Database.">
+      <figcaption>Figure 11. Data integrity verification.</figcaption></figure>
+    </div>
 
-    <h2 id="class-diagram">UML Class Diagram</h2>
-    <div class="todo">Class diagram image (Matt) → <code>images/class-diagram.png</code></div>
-
-    <h2 id="sequence">UML Sequence Diagrams</h2>
-    <div class="todo">Sequence diagram image(s) for key scenarios (Matt) → <code>images/sequence-*.png</code></div>
+    <h2 id="sequence">UML Sequence Diagram</h2>
+    <p>The sequence below shows how the components work together for the system's main scenario: a player opening the consolidated view for one character (FR-4). The gateway makes one aggregated call per view (<a href="rationale.html#dd-5">DD-5</a>).</p>
+    <figure>
+      <img src="images/sequence-character-view.png" alt="Sequence diagram: Player opens character view in C1, which calls C2 with a session token. C2 validates the session, loads the character through C4 from C8 with an ownership check, asks C5 for next-level requirements (C5 gets the progression track from C7, which reads the game definition from C8), asks C6 for before/after stats (C6 gets stat data from C7), and returns one combined response to C1, which shows the consolidated view.">
+      <figcaption>Figure 12. Sequence diagram: viewing a character's consolidated progression.</figcaption>
+    </figure>
 
   </main>
   <footer><div class="inner">CS 5744 Project 1 · Group 07 · Andre, Brad, Jack, Matt, Mustafa, Sophia</div></footer>
